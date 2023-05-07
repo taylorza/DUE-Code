@@ -1,0 +1,106 @@
+s=0 # Score
+init()
+start()
+
+@loop
+  # Move ball
+  b[0]=b[0]+b[2]
+  b[1]=b[1]+b[3]
+  
+  # Move paddle
+  if x>0 && btndown('a'):x=x-2.5:end
+  if x<112 && btndown('b'):x=x+2.5:end
+  
+  # Check missed paddle
+  if b[1]>60:start():end
+ 
+  # Check paddle collision
+  if b[1]>=60-r
+    if b[0]+r>=x && (b[0]-r)<=x+16
+      b[1]=60-r
+      b[2]=((b[0]-(x+8))/8)*2
+      b[3]=-b[3]
+      sound(200,10,100)
+    end
+  end
+  
+  # Check boundary collision
+  if b[0]<=r || b[0]>=127-r:b[2]=-b[2]:end
+  if b[1]<=0:b[3]=-b[3]:end
+  
+  # Check brick collision
+  if b[1]<=16 && b[1]>=10
+    u = b[0]
+    v = b[1]-10
+    i = trunc(u/8) + trunc(v/3)*16
+    if i>=0 && i<48
+      if z[i]
+        b[3]=-b[3]
+        z[i]=0
+        sound(400,10,100)
+        c=c-1
+        s=s+5
+      end
+    end
+  end
+  
+  # Update screen
+  lcdclear(0)
+  u=0:v=0
+  for i in range(0,48)
+    u=(i%16)*8
+    v=10+trunc(i/16)*4
+    if z[i]
+      lcdrect(1,u+1,v-1,7,3)
+    end
+  next
+
+  lcdline(1,x,60,x+16,60)
+  lcdcircle(1, b[0], b[1], r)
+  
+  lcdtext("SCORE",1,0,0)
+  lcdtext(str(s),1,32,0)
+  lcdshow()
+  
+  if c=0
+    # Restart if we got all the bricks
+    init()
+    start()
+  end
+goto loop
+ 
+@start
+  # Reset ball
+  b[0]=64-r
+  b[1]=28
+  if b[0]>x
+    b[2]=-1
+  else 
+    b[2]=1
+  end
+  lcdtext("Ready",1,52,30)
+  lcdshow();
+  wait(1000)
+return
+ 
+@init 
+  c=48        # Brick count
+  dim z[c]    # Bricks
+  dim b[4]    # Ball x,y,dx,dy
+  r=2         # ball radius
+  d=r*2       # ball diameter
+  x=64-8      # Paddle X
+  w=16        # Paddle width
+ 
+  # Setup the bricks
+  for i in range(0,48):z[i]=1:next
+  
+  # Setup ball
+  b[0]=64-r
+  b[1]=20
+  b[2]=1
+  b[3]=2
+  
+  btnenable('a',1)
+  btnenable('b',1)
+return
