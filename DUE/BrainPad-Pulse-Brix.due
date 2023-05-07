@@ -29,7 +29,7 @@ start()
   if b[1]<=0:b[3]=-b[3]:end
   
   # Check brick collision
-  if b[1]<=16 && b[1]>=10
+  if b[1]<=22 && b[1]>=10
     u = b[0]
     v = b[1]-10
     i = trunc(u/8) + trunc(v/3)*16
